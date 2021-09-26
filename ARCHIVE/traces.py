@@ -1,11 +1,8 @@
-from os.path import join
-
 import imageio
 from matplotlib import pyplot as plt
 
-from contrastive_highlights.get_agent import get_agent
-from contrastive_highlights.logging_info import log
-from contrastive_highlights.utils import pickle_save
+from ARCHIVE.get_agent import get_agent
+from ARCHIVE.logging_info import log
 
 
 class Trace(object):

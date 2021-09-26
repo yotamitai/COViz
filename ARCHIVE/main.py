@@ -3,12 +3,12 @@ from os.path import join
 
 import pandas as pd
 
-from contrastive_highlights.highlights_state_selection import compute_states_importance, \
+from ARCHIVE.highlights_state_selection import compute_states_importance, \
     summary_states_by_single_state
-from contrastive_highlights.logging_info import get_logging, log
-from contrastive_highlights.traces import get_execution_traces
-from contrastive_highlights.trajectories import states_to_trajectories
-from contrastive_highlights.utils import load_traces, save_traces
+from ARCHIVE.logging_info import get_logging, log
+from ARCHIVE.traces import get_execution_traces
+from ARCHIVE.trajectories import states_to_trajectories
+from ARCHIVE.utils import load_traces, save_traces
 
 
 def get_states(traces):
@@ -109,5 +109,5 @@ if __name__ == '__main__':
     }
     args.name = args.config["path"].split('/')[2]
     args.num_traces = 1
-    args.traces_path = '/home/yotama/OneDrive/Local_Git/Contrastive_Highlights/contrastive_highlights/results/2021-07-14_12:08:00_DQN_1000ep'
+    args.traces_path = '/ARCHIVE/results/2021-07-14_12:08:00_DQN_1000ep'
     main(args)

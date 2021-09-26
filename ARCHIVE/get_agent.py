@@ -2,9 +2,7 @@ from os.path import abspath
 from pathlib import Path
 
 import gym
-from rl_agents.agents.common.exploration.abstract import exploration_factory
-from rl_agents.agents.common.factory import agent_factory
-from rl_agents.trainer.evaluation import Evaluation
+
 
 
 class MyEvaluation(Evaluation):
