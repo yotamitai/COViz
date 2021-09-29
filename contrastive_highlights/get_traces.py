@@ -1,7 +1,8 @@
 from os.path import join
 
 
-from utils import Trace, State
+from common.utils import Trace, State
+from contrastive_highlights.get_agent import get_state_action_values
 
 
 def get_traces(environment, agent, args):
@@ -15,25 +16,19 @@ def get_traces(environment, agent, args):
 
 
 def get_single_trace(env, agent, trace_idx, agent_traces, states_dict, args):
-    """Implement a single trace while using the Trace and State classes"""
+    """Execute a single trace while using the Trace and State classes"""
     trace = Trace()
-    # ********* Implement here *****************
-    curr_obs = env.reset()
-    done = False
+    obs = env.reset()
+    done, state = False, None
     while not done:
-        a = agent.act(curr_obs)
+        a, state = agent.predict(obs, state=state, deterministic=True)
         obs, r, done, infos = env.step(a)
-
-
         """Generate State"""
         state_img = env.render(mode='rgb_array')
-        state_q_values = agent.get_state_action_values(obs)
-        features = NotImplemented #TODO implement here
+        state_q_values = get_state_action_values(agent, obs)
+        features = None
         state_id = (trace_idx, trace.length)
         states_dict[state_id] = State(state_id, obs, state_q_values, features, state_img)
         """Add step and state to trace"""
         trace.update(obs, r, done, infos, a, state_id)
-
-
-
     agent_traces.append(trace)

@@ -1,7 +1,9 @@
 from os.path import join
+from random import shuffle
+
 import numpy as np
 
-from utils import make_clean_dirs, pickle_load, pickle_save
+from common.utils import make_clean_dirs, pickle_load, pickle_save
 
 
 class Trajectory(object):
@@ -125,13 +127,17 @@ def states_to_trajectories(states_list, importance_dict):
     return trajectories
 
 
-def get_trajectory_images(trajectories, states, path):
+def get_trajectory_images(summary, states, path, randomized):
     make_clean_dirs(path)
+    summary_list = list(summary.keys())
+    if randomized: shuffle(summary_list)
     trajectory_idx = 0
-    for trajectory in trajectories:
+    for important_state in summary_list:
+        traj = summary[important_state]
         counter = 0
-        for state in trajectory.states:
-            trajectory_str = str(trajectory_idx) if trajectory_idx > 9 else "0" + str(trajectory_idx)
+        for state in traj:
+            trajectory_str = str(trajectory_idx) if trajectory_idx > 9 else "0" + str(
+                trajectory_idx)
             counter_str = str(counter) if counter > 9 else "0" + str(counter)
             img_name = "_".join([trajectory_str, counter_str])
             counter += 1

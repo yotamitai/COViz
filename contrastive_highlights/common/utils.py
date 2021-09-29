@@ -85,3 +85,9 @@ def create_video(frames_dir, output_dir, n_HLs, size, fps):
             out.write(img_array[i])
         out.release()
 
+
+def serialize_states(states):
+    return ' '.join([str(state[0]) + '_' + str(state[1]) for state in states])
+
+def unserialize_states(string):
+    return [tuple(state.split('_')) for state in string.split()]

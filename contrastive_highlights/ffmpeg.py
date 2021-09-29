@@ -13,7 +13,7 @@ def merge_and_fade(videos_dir, n_HLs, fade_out_frame, fade_duration, name, verbo
         f1.write(f"ffmpeg -i HL_{i}.mp4 -filter:v "
                  f"'fade=in:{0}:{fade_duration},fade=out:{fade_out_frame}:{fade_duration}' "
                  f"-c:v libx264 -crf 22 -preset veryfast -c:a copy fadeInOut_HL_{i}.mp4\n")
-    f1.write(f"ffmpeg -f concat -safe 0 -i list.txt -c copy ../{name}_HL.mp4")
+    f1.write(f"ffmpeg -f concat -safe 0 -i list.txt -c copy ../{name}_HIGHLIGHTS.mp4")
     f1.close()
 
     f2 = open(join(videos_dir, "list.txt"), "w+")
