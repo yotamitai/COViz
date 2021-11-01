@@ -5,6 +5,7 @@ import random
 import gym
 import pandas as pd
 from os.path import join
+import numpy as np
 
 from contrastive_highlights.ffmpeg import merge_and_fade
 from get_agent import get_agent
@@ -31,38 +32,44 @@ def save_videos(summary_states, states, args):
                    args.config.name)
 
 
-def get_highlights(args):
-    if args.load_dir:
+def get_traces_and_highlights(args):
+    if args.load:
         """Load traces and state dictionary"""
-        traces = pickle_load(join(args.load_dir, 'Traces.pkl'))
-        states = pickle_load(join(args.load_dir, 'States.pkl'))
-        if args.verbose: print(f"Highlights {15 * '-' + '>'} Traces & States Loaded")
+        traces = pickle_load(join(args.load, 'Traces.pkl'))
+        states = pickle_load(join(args.load, 'States.pkl'))
+        if args.verbose: print(f"HIGHLIGHTS {15 * '-' + '>'} Traces Loaded")
     else:
         env, agent = get_agent(args)
         env.args = args
         traces, states = get_traces(env, agent, args)
         env.close()
-        del gym.envs.registration.registry.env_specs[args.config.env]
+        if args.agent_type == "frogger":
+            del gym.envs.registration.registry.env_specs[env.spec.id]
+        if args.verbose: print(f"HIGHLIGHTS {15 * '-' + '>'} Traces Generated")
+
+        # env, agent = get_agent(args)
+        # # env.args = args
+        # # traces1, states1 = get_traces(env, agent, args)
+        # obs1 = env.reset()
+        # np.array_equiv(traces[0].obs[0], obs1)
+        # obs2 = env.reset()
+        # np.array_equiv(traces[1].obs[0], obs2)
+        # obs3 = env.reset()
+        # np.array_equiv(traces[2].obs[0], obs3)
 
     """Save data used for this run in output dir"""
     pickle_save(traces, join(args.output_dir, 'Traces.pkl'))
     pickle_save(states, join(args.output_dir, 'States.pkl'))
 
-    """highlights algorithm"""
-    data = {
-        'state': list(states.keys()),
-        'q_values': [x.observed_actions for x in states.values()]
-    }
-    q_values_df = pd.DataFrame(data)
-
     """importance by state"""
+    data = {'state': list(states.keys()),
+            'q_values': [x.observed_actions for x in states.values()]}
+    q_values_df = pd.DataFrame(data)
     q_values_df = compute_states_importance(q_values_df, compare_to=args.state_importance)
     highlights_df = q_values_df
     state_importance_dict = dict(zip(highlights_df["state"], highlights_df["importance"]))
 
-    """get highlights"""
-
-    """highlights importance by single state importance"""
+    """highlights by single state importance"""
     summary_states = highlights(highlights_df, traces, args.num_trajectories,
                                 args.trajectory_length, args.minimum_gap, args.overlay_limit)
 
@@ -80,5 +87,5 @@ def get_highlights(args):
     # random highlights
     # summary_trajectories = random.choices(all_trajectories, k=5)
 
-    save_videos(summary_states, states, args)
-    return
+    # save_videos(summary_states, states, args)
+    return traces, states, summary_states

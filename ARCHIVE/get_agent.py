@@ -6,7 +6,7 @@ import gym
 
 
 class MyEvaluation(Evaluation):
-    def __init__(self, env, agent, output_dir='../agents', num_episodes=1000, display_env=False):
+    def __init__(self, env, agent, output_dir='../trained', num_episodes=1000, display_env=False):
         self.OUTPUT_FOLDER = output_dir
         super(MyEvaluation, self).__init__(env, agent, num_episodes=num_episodes,
                                            display_env=display_env)

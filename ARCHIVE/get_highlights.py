@@ -20,8 +20,8 @@ def get_highlights(args):
         [args.id, datetime.now().strftime("%H:%M:%S_%d-%m-%Y")]))
     make_clean_dirs(args.output_dir)
 
-    env, agent, agent_args = get_agent(args)
-    traces, states = get_traces(env, agent, agent_args, abspath('results'), args)
+    env, agent = get_agent(args)
+    traces, states = get_traces(env, agent, abspath('results'), args)
 
     """highlights algorithm"""
     data = {
@@ -117,8 +117,8 @@ if __name__ == '__main__':
 
     """agent parameters"""
     args.agent_config = {
-        # "__class__": "<class 'rl_agents.agents.simple.open_loop.OpenLoopAgent'>",
-        "__class__": "<class 'rl_agents.agents.deep_q_network.pytorch.DQNAgent'>",
+        # "__class__": "<class 'rl_agents.trained.simple.open_loop.OpenLoopAgent'>",
+        "__class__": "<class 'rl_agents.trained.deep_q_network.pytorch.DQNAgent'>",
         "gamma": 0.7,
     }
     args.num_episodes = 1  # max 2000 (defined in configuration.py)

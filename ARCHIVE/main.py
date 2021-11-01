@@ -104,8 +104,8 @@ if __name__ == '__main__':
 
     """experiment parameters"""
     args.config = {
-        "__class__": "<class 'rl_agents.agents.deep_q_network.pytorch.DQNAgent'>",
-        "path": '../agents/DQN_1000ep/checkpoint-final.tar',
+        "__class__": "<class 'rl_agents.trained.deep_q_network.pytorch.DQNAgent'>",
+        "path": '../trained/DQN_1000ep/checkpoint-final.tar',
     }
     args.name = args.config["path"].split('/')[2]
     args.num_traces = 1

@@ -42,7 +42,7 @@ class CounterfactualTrajectory(object):
     #     s2_a1_vals = np.array(self.a1_values_for_a2_states)
     #     s2_a2_vals = np.array(self.a2_s_a_values)
     #     """calculate value of all individual states in both trajectories,
-    #      as ranked by both agents"""
+    #      as ranked by both trained"""
     #     traj1_importance_of_states = [
     #         self.state_disagreement_score(s1_a1_vals[i], s1_a2_vals[i], state_importance) for i
     #         in range(len(s1_a1_vals))]
