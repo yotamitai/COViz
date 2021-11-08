@@ -17,6 +17,8 @@ if __name__ == '__main__':
     parser.add_argument('--fps', help='summary video fps', type=int, default=5)
     parser.add_argument('--fade-duration', help='fade-in fade-out duration', type=int, default=2)
     parser.add_argument('--agent-type', help='model-agent interface', default="gym")
+    parser.add_argument('--highlights_div', type=bool, default=False)
+    parser.add_argument('--div_coefficient', type=int, default=2)
 
     # parser.add_argument('-n', '--n_traces', help='number of traces to obtain', type=int,
     #                     default=10)
@@ -33,9 +35,12 @@ if __name__ == '__main__':
     #                     help='load previously generated trajectories', type=bool, default=False)
     args = parser.parse_args()
     # args.load = 'results/run_2021-10-14_12:16:23_25541'
-    args.agent_config = "configs/BreakoutNoFrameskip-v4.json"
-    args.agent_type = "gym"
-    # args.agent_config = "configs/Frogger_Expert.json"
-    # args.agent_type = "frogger"
+    # args.agent_config = "configs/BreakoutNoFrameskip-v4.json"
+    # args.agent_type = "gym"
+    args.agent_config = "configs/Frogger_Expert.json"
+    args.agent_type = "frogger"
+
+    args.div_coefficient = 2
+    args.highlights_div = False
     # RUN
     main(args)

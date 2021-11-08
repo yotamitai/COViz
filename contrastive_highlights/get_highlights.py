@@ -15,6 +15,7 @@ from highlights_state_selection import compute_states_importance, highlights, hi
 from get_trajectories import states_to_trajectories, trajectories_by_importance, \
     get_trajectory_images
 
+
 def save_videos(summary_states, states, args):
     """Save Highlight videos"""
     frames_dir = join(args.output_dir, 'Highlight_Frames')
@@ -62,23 +63,34 @@ def get_traces_and_highlights(args):
     pickle_save(states, join(args.output_dir, 'States.pkl'))
 
     """importance by state"""
+    a,b,c= states[(0,0)].image.shape
     data = {'state': list(states.keys()),
-            'q_values': [x.observed_actions for x in states.values()]}
+            'q_values': [x.observed_actions for x in states.values()],
+            'features': [x.image.reshape(a*b*c) for x in states.values()]}
+
+    if args.highlights_div:
+        i = len(traces[0].states) // 2
+        threshold = args.div_coefficient * (
+            sum(states[(0, i)].image.reshape(a * b * c) - states[(0, i + 1)].image.reshape(
+                a * b * c)))
+
     q_values_df = pd.DataFrame(data)
     q_values_df = compute_states_importance(q_values_df, compare_to=args.state_importance)
     highlights_df = q_values_df
     state_importance_dict = dict(zip(highlights_df["state"], highlights_df["importance"]))
 
     """highlights by single state importance"""
-    summary_states = highlights(highlights_df, traces, args.num_trajectories,
-                                args.trajectory_length, args.minimum_gap, args.overlay_limit)
+    trace_lengths = {k: len(v.states) for k, v in enumerate(traces)}
+    if args.highlights_div:
+        summary_states = highlights_div(highlights_df, trace_lengths, args.num_trajectories,
+                                        args.trajectory_length, args.minimum_gap,
+                                        threshold=threshold)
+    else:
+        summary_states = highlights(highlights_df, trace_lengths, args.num_trajectories,
+                                    args.trajectory_length, args.minimum_gap)
 
     with open(join(args.output_dir, 'summary_states.json'), 'w') as f:
         json.dump(serialize_states(list(summary_states.keys())), f)
-    # TODO highlight-div
-    # summary_states = highlights_div(highlights_df, traces, args.num_trajectories,
-    #                             args.trajectory_length,
-    #                             args.minimum_gap)
 
     # TODO is saving trajectories necessary?
     # all_trajectories = states_to_trajectories(summary_states, state_importance_dict)

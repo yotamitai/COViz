@@ -42,7 +42,7 @@ class FroggerInterface(AbstractInterface):
         return env, agent
 
     def get_state_action_values(self, agent, state):
-        return agent.q[state]
+        return agent.q[state] #TODO change to probability instead of q value?
 
     def get_state_from_obs(self, agent, obs, params=None):
         return agent.agent_args["helper"].get_state_from_observation(obs, params[0], params[1])
