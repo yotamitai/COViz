@@ -33,6 +33,7 @@ class FroggerInterface(AbstractInterface):
         agent = QValueBasedAgent(config.num_states, config.num_actions,
                                  action_names=config.get_action_names(),
                                  exploration_strategy=exploration_strategy)
+        # helper.agent = agent
         agent_dir = config.load_dir
         agent.load(agent_dir)
         behavior_tracker = BehaviorTracker(config.num_episodes)
@@ -49,3 +50,13 @@ class FroggerInterface(AbstractInterface):
 
     def get_next_action(self, agent, obs, state):
         return agent.act(state)
+
+    def get_features(self, env):
+        position = [round(x) for x in env.env.game_state.game.frog.position]
+        return {"position": position}
+
+    # def update_interface(self, agent,trace_idx, step, old_obs, new_obs, r, done, a, prev_state, old_state, new_state):
+    #     r = agent.agent_args['helper'].get_reward(prev_state, a, r, new_state, done)
+    #     agent.update(old_state, a, r, new_state)
+    #     agent.agent_args['helper'].update_stats(trace_idx, step, old_obs, new_obs, prev_state, a, r, new_state)
+    #     return r

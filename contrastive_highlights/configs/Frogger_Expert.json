@@ -75,5 +75,9 @@
     "speed": 3.0,
     "load_dir": "../trained/Frogger_Expert",
     "fps": 1,
-    "show_score_bar": false
+    "show_score_bar": false,
+    "highlights": {
+        "box_size": [30, 30],
+        "text_coords": [20,510]
+  }
 }

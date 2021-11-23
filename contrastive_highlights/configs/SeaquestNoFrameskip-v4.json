@@ -18,5 +18,9 @@
   "seed":  0,
   "reward_log": "",
   "gym_packages": [] ,
-  "env_kwargs": null
+  "env_kwargs": null,
+  "highlights": {
+        "box_size": [15, 15],
+        "text_coords": [20,20]
   }
+}

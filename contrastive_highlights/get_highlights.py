@@ -7,30 +7,29 @@ import pandas as pd
 from os.path import join
 import numpy as np
 
-from contrastive_highlights.ffmpeg import merge_and_fade
+from contrastive_highlights.ffmpeg import ffmpeg_highlights
 from get_agent import get_agent
 from get_traces import get_traces
-from common.utils import pickle_save, pickle_load, create_video, serialize_states
+from common.utils import pickle_save, pickle_load, serialize_states, \
+    create_highlights_videos
 from highlights_state_selection import compute_states_importance, highlights, highlights_div
 from get_trajectories import states_to_trajectories, trajectories_by_importance, \
     get_trajectory_images
 
 
-def save_videos(summary_states, states, args):
+def save_highlights(img_shape, hl_name, args):
     """Save Highlight videos"""
-    frames_dir = join(args.output_dir, 'Highlight_Frames')
-    videos_dir = join(args.output_dir, "Highlight_Videos")
-    height, width, layers = states[(0, 0)].image.shape
+    height, width, layers = img_shape
     img_size = (width, height)
 
-    get_trajectory_images(summary_states, states, frames_dir, args.randomized)
-    create_video(frames_dir, videos_dir, args.num_trajectories, img_size, args.fps)
+    hl_len = create_highlights_videos(args.frames_dir, args.videos_dir, args.num_trajectories,
+                                      img_size, args.fps, pause=args.pause)
     if args.verbose: print(f"HIGHLIGHTS {15 * '-' + '>'} Videos Generated")
 
     """Merge Highlights to a single video with fade in/ fade out effects"""
-    fade_out_frame = args.trajectory_length - args.fade_duration
-    merge_and_fade(videos_dir, args.num_trajectories, fade_out_frame, args.fade_duration,
-                   args.config.name)
+    fade_out_frame = hl_len - args.fade_duration
+    ffmpeg_highlights(hl_name, args.videos_dir, args.num_trajectories, fade_out_frame,
+                      args.fade_duration)
 
 
 def get_traces_and_highlights(args):
@@ -38,7 +37,7 @@ def get_traces_and_highlights(args):
         """Load traces and state dictionary"""
         traces = pickle_load(join(args.load, 'Traces.pkl'))
         states = pickle_load(join(args.load, 'States.pkl'))
-        if args.verbose: print(f"HIGHLIGHTS {15 * '-' + '>'} Traces Loaded")
+        if args.verbose: print(f"Traces Loaded")
     else:
         env, agent = get_agent(args)
         env.args = args
@@ -46,27 +45,17 @@ def get_traces_and_highlights(args):
         env.close()
         if args.agent_type == "frogger":
             del gym.envs.registration.registry.env_specs[env.spec.id]
-        if args.verbose: print(f"HIGHLIGHTS {15 * '-' + '>'} Traces Generated")
-
-        # env, agent = get_agent(args)
-        # # env.args = args
-        # # traces1, states1 = get_traces(env, agent, args)
-        # obs1 = env.reset()
-        # np.array_equiv(traces[0].obs[0], obs1)
-        # obs2 = env.reset()
-        # np.array_equiv(traces[1].obs[0], obs2)
-        # obs3 = env.reset()
-        # np.array_equiv(traces[2].obs[0], obs3)
+        if args.verbose: print(f"Traces Generated")
 
     """Save data used for this run in output dir"""
     pickle_save(traces, join(args.output_dir, 'Traces.pkl'))
     pickle_save(states, join(args.output_dir, 'States.pkl'))
 
     """importance by state"""
-    a,b,c= states[(0,0)].image.shape
+    a, b, c = states[(0, 0)].image.shape
     data = {'state': list(states.keys()),
             'q_values': [x.observed_actions for x in states.values()],
-            'features': [x.image.reshape(a*b*c) for x in states.values()]}
+            'features': [x.image.reshape(a * b * c) for x in states.values()]}
 
     if args.highlights_div:
         i = len(traces[0].states) // 2
@@ -99,5 +88,7 @@ def get_traces_and_highlights(args):
     # random highlights
     # summary_trajectories = random.choices(all_trajectories, k=5)
 
-    # save_videos(summary_states, states, args)
+    # get_trajectory_images(summary_states, states, args.frames_dir, args.randomized)
+    # img_shape = states[(0,0)].image.shape
+    # save_highlights(img_shape, "Original Highlights", args)
     return traces, states, summary_states

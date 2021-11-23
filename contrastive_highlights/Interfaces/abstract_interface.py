@@ -1,7 +1,7 @@
 
 
 class AbstractInterface(object):
-    def __init__(self, config,output_dir):
+    def __init__(self, config, output_dir):
         self.output_dir = output_dir
         self.config = config
 
@@ -15,4 +15,7 @@ class AbstractInterface(object):
         return
 
     def get_next_action(self, agent, obs, state):
+        return
+
+    def get_features(self, env):
         return

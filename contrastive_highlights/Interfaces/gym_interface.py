@@ -16,9 +16,8 @@ from utils.exp_manager import ExperimentManager
 
 
 class GymInterface(AbstractInterface):
-    def __init__(self, config, output_dir,):
-        super().__init__(config,output_dir,)
-
+    def __init__(self, config, output_dir, ):
+        super().__init__(config, output_dir, )
 
     def initiate(self):
         config, output_dir = self.config, self.output_dir
@@ -91,7 +90,8 @@ class GymInterface(AbstractInterface):
         config.is_atari = ExperimentManager.is_atari(env_id)
 
         stats_path = join(log_path, env_id)
-        hyperparams, stats_path = get_saved_hyperparams(stats_path, norm_reward=config.norm_reward,
+        hyperparams, stats_path = get_saved_hyperparams(stats_path,
+                                                        norm_reward=config.norm_reward,
                                                         test_mode=True)
 
         # load env_kwargs if existing
@@ -151,3 +151,6 @@ class GymInterface(AbstractInterface):
     def get_next_action(self, agent, obs, state):
         a, _ = agent.predict(obs, state=state, deterministic=True)
         return a
+
+    def get_features(self, env):
+        return
