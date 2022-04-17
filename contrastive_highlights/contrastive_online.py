@@ -23,7 +23,7 @@ class ContrastiveTrajectory(object):
         action = contra_action
         for step in range(state_id[1] + 1, state_id[1] + self.k_steps + 1):
             obs, r, done, info = env.step(action)
-            contra_counter-=1 # reduce contra counter
+            contra_counter -= 1  # reduce contra counter
             s = agent.interface.get_state_from_obs(agent, obs)
             s_a_values = agent.interface.get_state_action_values(agent, s)
             frame = env.render(mode='rgb_array')
@@ -32,11 +32,12 @@ class ContrastiveTrajectory(object):
             state_obj = State(contra_state_id, obs, s, s_a_values, frame, features)
             self.update(state_obj, r, action)
             if done: break
-            if contra_counter>0: continue
+            if contra_counter > 0: continue
             action = agent.interface.get_next_action(agent, obs, s)
 
 
-def get_contrastive_trajectory(state_id, trace, env, agent, contra_action, k_steps, contra_counter):
+def get_contrastive_trajectory(state_id, trace, env, agent, contra_action, k_steps,
+                               contra_counter):
     traj = ContrastiveTrajectory(state_id, k_steps, trace)
     traj.get_contrastive_trajectory(env, agent, state_id, contra_action, contra_counter)
     return traj

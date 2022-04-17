@@ -50,9 +50,10 @@ def rank_trajectories(traces, method):
                 end_state = min(i + t.k_steps, max_trace_state, max_contrastive_state)
                 t.contrastive[i].traj_end_state = end_state
                 state1 = t.states[end_state]
-                state2 = [x for x in contra_states if x.id[1]==end_state][0]
+                state2 = [x for x in contra_states if x.id[1] == end_state][0]
                 """the value of the state is defined by the best available action from it"""
-                t.contrastive[i].importance = abs(max(state1.observed_actions)-max(state2.observed_actions))
+                t.contrastive[i].importance = abs(
+                    max(state1.observed_actions) - max(state2.observed_actions))
 
 
 def get_top_k_diverse(traces, args):
@@ -61,7 +62,7 @@ def get_top_k_diverse(traces, args):
     diversity measure - check intersection between trajectory indexes
     """
     all_contrastive_trajs = []
-    for t in traces: all_contrastive_trajs+=t.contrastive
+    for t in traces: all_contrastive_trajs += t.contrastive
     all_contrastive_trajs.sort(key=lambda x: x.importance)
 
     top_k, seen = [], defaultdict(lambda: [])

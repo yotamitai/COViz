@@ -123,8 +123,8 @@ class HighwayTrace(Trace):
         """the contrastive trajectory"""
         ref_pos = [164, 66]
         rel_pos = self.get_relative_position(indexes, hl_idx)
-        for i in range(indexes[-1]- hl_idx):
-            marked_frame = copy(self.states[hl_idx+i+1].image)
+        for i in range(indexes[-1] - hl_idx):
+            marked_frame = copy(self.states[hl_idx + i + 1].image)
             add_x, add_y = int(rel_pos[i][1] * 5), int(rel_pos[i][0] * 10)
             top_left = (ref_pos[0] + add_y, ref_pos[1] + add_x)
             bottom_right = (ref_pos[0] + 30 + add_y, ref_pos[1] + 15 + add_x)
@@ -138,7 +138,6 @@ class HighwayTrace(Trace):
             frames.append(marked_frame)
         return frames, rel_idx
 
-
     def mark_contrastive_state(self, hl, color=255, thickness=2):
         img2 = copy(self.states[hl[1]].image)
         # static_position = [164, 66]
@@ -151,7 +150,7 @@ class HighwayTrace(Trace):
         a1_obs = np.array(
             [x.features["position"] for x in self.states[hl_idx + 1:trajectory[-1] + 1]])
         a2_obs = [x.features["position"] for x in self.contrastive[hl_idx].states if
-                  x.id[1] > hl_idx and x.id[1]<=self.contrastive[hl_idx].traj_end_state]
+                  x.id[1] > hl_idx and x.id[1] <= self.contrastive[hl_idx].traj_end_state]
         assert len(a1_obs) == len(a2_obs), "Error with trajectory lengths"
         rel_cords = np.around(a2_obs - a1_obs, 3)
         return rel_cords

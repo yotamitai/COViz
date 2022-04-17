@@ -24,12 +24,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     args.interface = "Highway"
-    args.div_coefficient = 2
-    args.highlights_div = False
-    args.trajectory_length = 10
-    args.n_traces = 3
-    args.contrastive_method = "second"
-    args.colors = [255,0]
     args.pause = 3
     args.fps = 2
     args.contra_action_counter = 3
@@ -38,6 +32,7 @@ if __name__ == '__main__':
     # RUN
     if args.interface == "Highway":
         from contrastive_highlights.interfaces.Highway.highway_interface import highway_config
+
         args = highway_config(args)
 
     main(args)
