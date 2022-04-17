@@ -1,20 +1,14 @@
-import argparse
 import json
-import random
 
 import gym
 import pandas as pd
 from os.path import join
-import numpy as np
 
 from contrastive_highlights.ffmpeg import ffmpeg_highlights
 from get_agent import get_agent
 from get_traces import get_traces
-from common.utils import pickle_save, pickle_load, serialize_states, \
-    create_highlights_videos
+from common import pickle_save, pickle_load, serialize_states, create_highlights_videos
 from highlights_state_selection import compute_states_importance, highlights, highlights_div
-from get_trajectories import states_to_trajectories, trajectories_by_importance, \
-    get_trajectory_images
 
 
 def save_highlights(img_shape, hl_name, args):
@@ -32,7 +26,7 @@ def save_highlights(img_shape, hl_name, args):
                       args.fade_duration)
 
 
-def get_traces_and_highlights(args):
+def get_traces_and_highlights(env, agent, args):
     if args.load:
         """Load traces and state dictionary"""
         traces = pickle_load(join(args.load, 'Traces.pkl'))
@@ -43,7 +37,7 @@ def get_traces_and_highlights(args):
         env.args = args
         traces, states = get_traces(env, agent, args)
         env.close()
-        if args.agent_type == "frogger":
+        if args.interface == "frogger":
             del gym.envs.registration.registry.env_specs[env.spec.id]
         if args.verbose: print(f"Traces Generated")
 

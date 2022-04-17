@@ -1,3 +1,5 @@
+import imageio
+from matplotlib import pyplot as plt
 
 
 class AbstractInterface(object):
@@ -19,3 +21,14 @@ class AbstractInterface(object):
 
     def get_features(self, env):
         return
+
+    def contrastive_trace(self, trace_idx, k_steps, params=None):
+        return
+
+    def pre_contrastive(self, env):
+        return
+
+    def post_contrastive(self, agent1, agent2, pre_params=None):
+        return
+
+

@@ -1,3 +1,5 @@
+import logging
+
 import os
 import glob
 import pickle
@@ -8,38 +10,45 @@ import matplotlib.pyplot as plt
 import imageio
 from skimage import img_as_ubyte
 
-from contrastive_highlights.ffmpeg import ffmpeg_contrastive, ffmpeg_highlights
+from contrastive_highlights.ffmpeg import ffmpeg_highlights_seperated
 
 
 class Trace(object):
-    def __init__(self):
+    def __init__(self, idx, k_steps):
         self.obs = []
-        self.actions = []
+        self.previous_actions = []
         self.rewards = []
         self.dones = []
         self.infos = []
         self.reward_sum = 0
-        self.game_score = None
         self.length = 0
         self.states = []
+        self.trace_idx = idx
+        self.k_steps = k_steps
 
     def update(self, obs, r, done, infos, a, state_id):
         self.obs.append(obs)
         self.rewards.append(r)
         self.dones.append(done)
         self.infos.append(infos)
-        self.actions.append(a)
+        self.previous_actions.append(a)
         self.reward_sum += r
         self.states.append(state_id)
         self.length += 1
 
+    def get_traj_frames(self,idxs):
+        frames = []
+        for i in idxs:
+            frames.append(self.states[i].image)
+        return frames
+
 
 class State(object):
-    def __init__(self, name, obs, state, action_vector, features, img):
+    def __init__(self, id, obs, state, action_vector, img, features):
         self.observation = obs
         self.image = img
         self.observed_actions = action_vector
-        self.name = name
+        self.id = id
         self.features = features
         self.state = state
 
@@ -51,6 +60,33 @@ class State(object):
         imageio.imwrite(path + '/' + name + '.png', self.image)
 
 
+def get_highlight_traj_indxs(highlights):
+    traj_indxs = {}
+    for hl in highlights:
+        traj_indxs[(hl.id[0], hl.id[1])] = [x.id[1] for x in hl.states if x.id[1]<=hl.traj_end_state]
+    return traj_indxs
+
+def save_frames(trajectories_dict, path, contra_rel_idxs):
+    make_clean_dirs(path)
+    for i, hl in enumerate(trajectories_dict):
+        for j, f in enumerate(trajectories_dict[hl]):
+            vid_num = str(i) if i > 9 else "0" + str(i)
+            frame_num = str(j) if j > 9 else "0" + str(j)
+            img_name = f"{vid_num}_{frame_num}"
+            if j == contra_rel_idxs[hl]:
+                img_name+="_CA"
+            save_image(path, img_name, f)
+
+
+def save_highlights(img_shape, n_videos, args):
+    """Save Highlight videos"""
+    height, width, layers = img_shape
+    img_size = (width, height)
+    create_highlights_videos(args.frames_dir, args.videos_dir, n_videos,img_size,
+                             args.fps, pause=args.pause)
+    # ffmpeg_highlights_seperated(args.videos_dir, n_videos)
+
+
 def pickle_load(filename):
     return pickle.load(open(filename, "rb"))
 
@@ -59,6 +95,17 @@ def pickle_save(obj, path):
     with open(path, "wb") as file:
         pickle.dump(obj, file)
 
+
+def load_traces(path):
+    return pickle_load(join(path, 'Traces.pkl'))
+
+
+def save_traces(traces, output_dir):
+    try:
+        os.makedirs(output_dir)
+    except:
+        pass
+    pickle_save(traces, join(output_dir, 'Traces.pkl'))
 
 def make_clean_dirs(path, no_clean=False, file_type=''):
     try:
@@ -82,7 +129,7 @@ def create_highlights_videos(frames_dir, video_dir, n_HLs, size, fps, pause=None
             [x for x in glob.glob(frames_dir + "/*.png") if x.split('/')[-1].startswith(hl_str)])
         for i,f in enumerate(file_list):
             img = cv2.imread(f)
-            if i == (len(file_list) // 2) - 1 and pause:
+            if f.endswith("CA.png") and pause:
                 [img_array.append(img) for _ in range(pause)]
             img_array.append(img)
 
@@ -103,14 +150,6 @@ def unserialize_states(string):
 def save_image(path, name, img):
     imageio.imsave(path + '/' + name + '.png', img_as_ubyte(img))
 
-def save_frames(trajectories, path):
-    make_clean_dirs(path)
-    for i, frames in enumerate(trajectories):
-        for j, frame in enumerate(frames):
-            vid_num = str(i) if i > 9 else "0" + str(i)
-            frame_num = str(j) if j > 9 else "0" + str(j)
-            img_name = f"{vid_num}_{frame_num}"
-            save_image(path, img_name, frame)
 
 
 def save_contrastive_videos(frames, output_dir, fps):
@@ -163,3 +202,7 @@ def create_video(name, frame_dir, video_dir, agent_vid, size, length, fps, start
     for i in range(len(img_array)):
         out.write(img_array[i])
     out.release()
+
+def log_msg(msg, verbose=True):
+    logging.info(msg)
+    if verbose: print(msg)

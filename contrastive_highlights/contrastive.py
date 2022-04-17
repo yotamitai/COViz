@@ -1,8 +1,9 @@
 import gym
 import numpy as np
 
-from contrastive_highlights.common.utils import State
+from contrastive_highlights.common import State
 from get_agent import get_agent
+
 
 
 class ContrastiveHighlight(object):
@@ -33,7 +34,7 @@ class ContrastiveHighlight(object):
         o_after_frames = [self.trajectory_original[-1].image for _ in range(o_missing_end)]
         c_after_frames = [self.trajectory_contrastive[-1].image for _ in range(c_missing_end)]
 
-        return o_traj + o_after_frames,  c_traj + c_after_frames
+        return o_traj + o_after_frames, c_traj + c_after_frames
 
 
 def enact_contrastive(action_values, method):
@@ -61,7 +62,7 @@ def get_contrastive_highlights(traces, states, summary_trajectories, args):
                                  args.trajectory_length, (t_idx, hl_idx)))
 
         env.close()
-        if args.agent_type == "frogger":
+        if args.interface == "frogger":
             del gym.envs.registration.registry.env_specs[env.spec.id]
 
     return contrastive_highlights
@@ -77,7 +78,7 @@ def get_contrastive_trace(env, agent, trace, trace_idx, highlight_state_idx, hig
         assert np.array_equiv(obs, trace.obs[i]), "Unmatched trace"
         a = trace.actions[i]
         obs, r, done, infos = env.step(a)
-        #TODO state, obs = new_state, new_obs
+        # TODO state, obs = new_state, new_obs
 
     """contrastive state"""
     state = agent.interface.get_state_from_obs(agent, obs, [r, done])
@@ -87,7 +88,7 @@ def get_contrastive_trace(env, agent, trace, trace_idx, highlight_state_idx, hig
     features = agent.interface.get_features(env)
     states_list.append(State(state_id, obs, state, state_action_values, features, state_img))
     """start contrastive trajectory"""
-    for idx in range(highlight_state_idx+1,
+    for idx in range(highlight_state_idx + 1,
                      highlight_state_idx + (args.trajectory_length // 2) + 1):
         new_obs, r, done, infos = env.step(a)
         new_state = agent.interface.get_state_from_obs(agent, obs, [r, done])
@@ -101,6 +102,3 @@ def get_contrastive_trace(env, agent, trace, trace_idx, highlight_state_idx, hig
         if done: break
 
     return states_list
-
-
-

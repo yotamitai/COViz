@@ -1,9 +1,6 @@
-from os.path import join
 
-import numpy as np
 
-from common.utils import Trace, State
-from contrastive_highlights.contrastive import enact_contrastive
+from common import State
 
 
 def get_traces(environment, agent, args):
@@ -21,7 +18,7 @@ def get_traces(environment, agent, args):
 
 def get_single_trace(env, agent, trace_idx, states_dict):
     """Execute a single trace while using the Trace and State classes"""
-    trace = Trace()
+    trace = agent.interface.get_trace()
     done, r, infos = False, 0, {}
     """update initial state"""
     obs = env.reset()

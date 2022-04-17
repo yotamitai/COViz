@@ -11,7 +11,7 @@ from stable_baselines3.common.utils import set_random_seed
 
 from utils import ALGOS, create_test_env, get_latest_run_id, get_saved_hyperparams
 
-from contrastive_highlights.Interfaces.abstract_interface import AbstractInterface
+from contrastive_highlights.interfaces.abstract_interface import AbstractInterface
 from utils.exp_manager import ExperimentManager
 
 
