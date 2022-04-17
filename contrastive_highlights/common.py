@@ -36,7 +36,7 @@ class Trace(object):
         self.states.append(state_id)
         self.length += 1
 
-    def get_traj_frames(self,idxs):
+    def get_traj_frames(self, idxs):
         frames = []
         for i in idxs:
             frames.append(self.states[i].image)
@@ -63,8 +63,10 @@ class State(object):
 def get_highlight_traj_indxs(highlights):
     traj_indxs = {}
     for hl in highlights:
-        traj_indxs[(hl.id[0], hl.id[1])] = [x.id[1] for x in hl.states if x.id[1]<=hl.traj_end_state]
+        traj_indxs[(hl.id[0], hl.id[1])] = [x.id[1] for x in hl.states if
+                                            x.id[1] <= hl.traj_end_state]
     return traj_indxs
+
 
 def save_frames(trajectories_dict, path, contra_rel_idxs):
     make_clean_dirs(path)
@@ -74,7 +76,7 @@ def save_frames(trajectories_dict, path, contra_rel_idxs):
             frame_num = str(j) if j > 9 else "0" + str(j)
             img_name = f"{vid_num}_{frame_num}"
             if j == contra_rel_idxs[hl]:
-                img_name+="_CA"
+                img_name += "_CA"
             save_image(path, img_name, f)
 
 
@@ -82,7 +84,7 @@ def save_highlights(img_shape, n_videos, args):
     """Save Highlight videos"""
     height, width, layers = img_shape
     img_size = (width, height)
-    create_highlights_videos(args.frames_dir, args.videos_dir, n_videos,img_size,
+    create_highlights_videos(args.frames_dir, args.videos_dir, n_videos, img_size,
                              args.fps, pause=args.pause)
     # ffmpeg_highlights_seperated(args.videos_dir, n_videos)
 
@@ -107,6 +109,7 @@ def save_traces(traces, output_dir):
         pass
     pickle_save(traces, join(output_dir, 'Traces.pkl'))
 
+
 def make_clean_dirs(path, no_clean=False, file_type=''):
     try:
         os.makedirs(path)
@@ -127,7 +130,7 @@ def create_highlights_videos(frames_dir, video_dir, n_HLs, size, fps, pause=None
         img_array = []
         file_list = sorted(
             [x for x in glob.glob(frames_dir + "/*.png") if x.split('/')[-1].startswith(hl_str)])
-        for i,f in enumerate(file_list):
+        for i, f in enumerate(file_list):
             img = cv2.imread(f)
             if f.endswith("CA.png") and pause:
                 [img_array.append(img) for _ in range(pause)]
@@ -144,12 +147,13 @@ def create_highlights_videos(frames_dir, video_dir, n_HLs, size, fps, pause=None
 def serialize_states(states):
     return ' '.join([str(state[0]) + '_' + str(state[1]) for state in states])
 
+
 def unserialize_states(string):
     return [tuple(state.split('_')) for state in string.split()]
 
+
 def save_image(path, name, img):
     imageio.imsave(path + '/' + name + '.png', img_as_ubyte(img))
-
 
 
 def save_contrastive_videos(frames, output_dir, fps):
@@ -171,8 +175,10 @@ def save_contrastive_videos(frames, output_dir, fps):
                      cont_idx, fps, add_pause=[0, 4])
         """from disagreement"""
         name1, name2 = f"a1_vid{vid_i}", f"a2_vid{vid_i}"
-        create_video(name1, frames_dir, temp_dir, name1, size, len(frames[0]), fps, start=cont_idx)
-        create_video(name2, frames_dir, temp_dir, name2, size, len(frames[0]), fps, start=cont_idx)
+        create_video(name1, frames_dir, temp_dir, name1, size, len(frames[0]), fps,
+                     start=cont_idx)
+        create_video(name2, frames_dir, temp_dir, name2, size, len(frames[0]), fps,
+                     start=cont_idx)
 
     """generate video"""
     fade_duration = 2
@@ -202,6 +208,7 @@ def create_video(name, frame_dir, video_dir, agent_vid, size, length, fps, start
     for i in range(len(img_array)):
         out.write(img_array[i])
     out.release()
+
 
 def log_msg(msg, verbose=True):
     logging.info(msg)

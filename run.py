@@ -32,6 +32,7 @@ if __name__ == '__main__':
     args.colors = [255,0]
     args.pause = 3
     args.fps = 2
+    args.contra_action_counter = 3
 
     args.traces_path = abspath('results')
     # RUN

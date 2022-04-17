@@ -165,7 +165,7 @@ def highway_config(args):
     args.data_name = ''
     args.name = "Plain_old"
     args.load_path = abspath(f'../agents/{args.interface}/{args.name}')
-    args.n_traces = 6
-    args.k_steps = 6
+    args.n_traces = 10
+    args.k_steps = 7
     args.overlay = args.k_steps // 2
     return args

@@ -43,7 +43,6 @@ def contrastive_online(args):
 def rank_trajectories(traces, method):
     for t in traces:
         for i in range(len(t.states)):
-            print(i)
             if method == "lastState":
                 contra_states = t.contrastive[i].states
                 max_trace_state = len(t.states) - 1
