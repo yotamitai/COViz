@@ -12,7 +12,7 @@ pip install -r requirements.txt
 ### Required repositories
 The Highway domain implementation of the algorithm requires the following repositories:
 
-[https://github.com/eleurent/highway-env](https://github.com/eleurent/highway-env)
+[https://github.com/eleurent/highway-env](https://github.com/eleurent/highway-env) V1.4
 
 [https://github.com/eleurent/rl-agents](https://github.com/eleurent/rl-agents)
 
