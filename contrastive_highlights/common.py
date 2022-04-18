@@ -102,12 +102,12 @@ def load_traces(path):
     return pickle_load(join(path, 'Traces.pkl'))
 
 
-def save_traces(traces, output_dir):
+def save_traces(traces, output_dir, name='Traces.pkl'):
     try:
         os.makedirs(output_dir)
     except:
         pass
-    pickle_save(traces, join(output_dir, 'Traces.pkl'))
+    pickle_save(traces, join(output_dir, name))
 
 
 def make_clean_dirs(path, no_clean=False, file_type=''):

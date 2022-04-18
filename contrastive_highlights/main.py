@@ -10,6 +10,7 @@ from pathlib import Path
 from contrastive_highlights.common import save_traces, log_msg, load_traces, \
     get_highlight_traj_indxs, save_highlights, save_frames
 from contrastive_highlights.contrastive_online import online_comparison
+from contrastive_highlights.contrastive_online_RD import online_comparison_RD
 from contrastive_highlights.get_agent import get_config, get_agent
 
 
@@ -29,7 +30,11 @@ def contrastive_online(args):
         evaluation2 = agent2.interface.evaluation(env2, agent2)
         env1.args = args
         env2.args = args
-        traces = online_comparison(env1, agent1, env2, agent2, args, evaluation1=evaluation1,
+        if args.multi_head:
+            traces = online_comparison_RD(env1, agent1, env2, agent2, args, evaluation1=evaluation1,
+                              evaluation2=evaluation2)
+        else:
+            traces = online_comparison(env1, agent1, env2, agent2, args, evaluation1=evaluation1,
                                    evaluation2=evaluation2)
         env1.close()
         env2.close()
@@ -109,6 +114,7 @@ def main(args):
 
     """randomize order"""
     if args.randomized: random.shuffle(highlights)
+    save_traces([x.id for x in highlights], abspath('results'), name="Selected_Indexes.pkl")
 
     """obtain trajectory indexes"""
     traj_indxs = get_highlight_traj_indxs(highlights)

@@ -17,6 +17,8 @@ from rl_agents.agents.common.factory import agent_factory
 from contrastive_highlights.interfaces.abstract_interface import AbstractInterface
 from rl_agents.trainer.evaluation import Evaluation
 import contrastive_highlights.interfaces.Highway
+import multi_head.highway_env_local.envs.highway_env_local
+from multi_head.DQNAgent_local_files.pytorch_local import DQNAgent
 
 
 # ACTION_DICT = {0: 'LANE_LEFT', 1: 'IDLE', 2: 'LANE_RIGHT', 3: 'FASTER', 4: 'SLOWER'}
@@ -34,12 +36,13 @@ agent_position = [164, 66]  # static in this domain
 class HighwayInterface(AbstractInterface):
     def __init__(self, config, output_dir, load_path):
         super().__init__(config, output_dir)
+        self.multi_head = None
         self.load_path = load_path
 
     def initiate(self, seed=0, evaluation_reset=False):
         config, output_dir = self.config, self.output_dir
         env_config, agent_config = config['env'], config['agent']
-        env = gym.make(env_config["env_id"])
+        env = gym.make(env_config["id"])
         env.seed(seed)
         env_config.update({"simulation_frequency": 15, "policy_frequency": 5, })
         env.configure(env_config)
@@ -58,7 +61,11 @@ class HighwayInterface(AbstractInterface):
         return evaluation
 
     def get_state_action_values(self, agent, state):
-        return agent.get_state_action_values(state)
+        action_values = agent.get_state_action_values(state)
+        return action_values if action_values.ndim == 1 else action_values[0][0]
+
+    def get_state_RD_action_values(self, agent, state):
+        return agent.get_state_action_values(state)[1:]
 
     def get_state_from_obs(self, agent, obs, params=None):
         return obs
@@ -162,9 +169,10 @@ def highway_config(args):
     """Highlight parameters"""
     args.config_changes = {"env": {}, "agent": {}}
     args.data_name = ''
-    args.name = "Plain_old"
+    args.name = "rightLaneChangeLane"
+    # args.name = "Plain_old"
     args.load_path = abspath(f'../agents/{args.interface}/{args.name}')
-    args.n_traces = 10
+    args.n_traces = 3
     args.k_steps = 7
     args.overlay = args.k_steps // 2
     return args
