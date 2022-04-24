@@ -118,6 +118,7 @@ class HighwayTrace(Trace):
         marked_frame = copy(self.states[hl_idx].image)
         top_left = (164, 66)
         bottom_right = (194, 81)
+        marked_frame = np.ascontiguousarray(marked_frame, dtype=np.uint8)
         cv2.rectangle(marked_frame, top_left, bottom_right, color, thickness)
         # add text
         font = ImageFont.truetype('Roboto-Regular.ttf', 20)
@@ -135,6 +136,7 @@ class HighwayTrace(Trace):
             add_x, add_y = int(rel_pos[i][1] * 5), int(rel_pos[i][0] * 10)
             top_left = (ref_pos[0] + add_y, ref_pos[1] + add_x)
             bottom_right = (ref_pos[0] + 30 + add_y, ref_pos[1] + 15 + add_x)
+            marked_frame = np.ascontiguousarray(marked_frame, dtype=np.uint8)
             cv2.rectangle(marked_frame, top_left, bottom_right, color, thickness)
             # cv2.rectangle(marked_frame, (ref_pos[0] + add_y + 4, ref_pos[1] + add_x + 4),
             #               (ref_pos[0] + 30 + add_y - 4, ref_pos[1] + 15 + add_x - 4),
@@ -172,7 +174,7 @@ def highway_config(args):
     args.name = "rightLaneChangeLane"
     # args.name = "Plain_old"
     args.load_path = abspath(f'../agents/{args.interface}/{args.name}')
-    args.n_traces = 3
+    args.n_traces = 2
     args.k_steps = 7
     args.overlay = args.k_steps // 2
     return args
