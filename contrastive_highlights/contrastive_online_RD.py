@@ -52,6 +52,7 @@ def online_comparison_RD(env1, agent1, env2, agent2, args, evaluation1=None, eva
 
         """end of episode"""
         traces.append(trace)
+        trace.RD_vals = rd_vals
         reward_decomps.append(rd_vals)
     """save RD traces"""
     save_traces(reward_decomps, args.output_dir, name='RD_Values.pkl')

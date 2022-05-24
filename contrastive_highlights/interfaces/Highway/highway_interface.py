@@ -152,6 +152,7 @@ class HighwayTrace(Trace):
         # static_position = [164, 66]
         top_left = (164, 66)
         bottom_right = (194, 81)
+        img2 = np.ascontiguousarray(img2, dtype=np.uint8)
         cv2.rectangle(img2, top_left, bottom_right, color, thickness)
         return img2
 

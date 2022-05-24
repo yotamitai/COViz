@@ -114,7 +114,12 @@ def main(args):
 
     """randomize order"""
     if args.randomized: random.shuffle(highlights)
-    save_traces([x.id for x in highlights], abspath('results'), name="Selected_Indexes.pkl")
+    id_list = []
+    for hl in highlights:
+        t,s = hl.id
+        id_list.append(tuple([hl.id, traces[t].RD_vals[s]]))
+    save_traces(id_list, abspath('results'), name="Selected_Highlights.pkl")
+    # save_traces([x.id for x in highlights], abspath('results'), name="Selected_Indexes.pkl")
 
     """obtain trajectory indexes"""
     traj_indxs = get_highlight_traj_indxs(highlights)
