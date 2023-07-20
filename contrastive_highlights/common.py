@@ -68,14 +68,14 @@ def get_highlight_traj_indxs(highlights):
     return traj_indxs
 
 
-def save_frames(trajectories_dict, path, contra_rel_idxs):
+def save_frames(trajectories_dict, path, contra_rel_idxs=False):
     make_clean_dirs(path)
     for i, hl in enumerate(trajectories_dict):
         for j, f in enumerate(trajectories_dict[hl]):
             vid_num = str(i) if i > 9 else "0" + str(i)
             frame_num = str(j) if j > 9 else "0" + str(j)
             img_name = f"{vid_num}_{frame_num}"
-            if j == contra_rel_idxs[hl]:
+            if contra_rel_idxs and  j == contra_rel_idxs[hl]:
                 img_name += "_CA"
             save_image(path, img_name, f)
 

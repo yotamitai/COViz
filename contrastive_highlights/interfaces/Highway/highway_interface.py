@@ -103,15 +103,22 @@ class HighwayTrace(Trace):
         self.states.append(state_object)
         self.length += 1
 
-    def mark_frames(self, hl_idx, indexes, color=255, thickness=2):
+    def mark_frames(self, hl_idx, indexes, color=255, thickness=2, no_mark=False):
         """
         mark the contrastive frames
         highway static agent position = [164, 66]
         """
         frames, rel_idx = [], 0
+
+        if no_mark:
+            """the common trajectory"""
+            for i in range(indexes[0], indexes[-1]+1):
+                frames.append(self.states[i].image)
+            return frames, rel_idx
+
         """the common trajectory"""
-        for state in range(indexes[0], hl_idx):
-            frames.append(self.states[state].image)
+        for i in range(indexes[0], hl_idx):
+            frames.append(self.states[i].image)
 
         """the contrastive state"""
         rel_idx = len(frames)
@@ -145,6 +152,7 @@ class HighwayTrace(Trace):
             # plt.imshow(marked_frame)
             # plt.show()
             frames.append(marked_frame)
+
         return frames, rel_idx
 
     def mark_contrastive_state(self, hl, color=255, thickness=2):
@@ -175,7 +183,7 @@ def highway_config(args):
     args.name = "rightLaneChangeLane"
     # args.name = "Plain_old"
     args.load_path = abspath(f'../agents/{args.interface}/{args.name}')
-    args.n_traces = 2
-    args.k_steps = 7
+    args.n_traces = 10
+    args.k_steps = 15
     args.overlay = args.k_steps // 2
     return args

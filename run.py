@@ -25,15 +25,18 @@ if __name__ == '__main__':
 
     args.interface = "Highway"
     args.pause = 3
-    args.fps = 5
+    args.fps = 3
     args.contra_action_counter = 1
+    args.no_mark = True
 
     args.traces_path = abspath('results')
-    args.multi_head = True
-    # RUN
-    if args.interface == "Highway":
-        from contrastive_highlights.interfaces.Highway.highway_interface import highway_config
+    if args.traces_path:
+        main(args)
+    else:
+        args.multi_head = True
+        # RUN
+        if args.interface == "Highway":
+            from contrastive_highlights.interfaces.Highway.highway_interface import highway_config
+            args = highway_config(args)
 
-        args = highway_config(args)
-
-    main(args)
+        main(args)

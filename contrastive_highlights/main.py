@@ -23,6 +23,8 @@ def output_and_metadata(args):
 
 
 def contrastive_online(args):
+    args.config = get_config(args.load_path, args.config_filename, changes=args.config_changes)
+
     if args.interface == "Highway":
         env1, agent1 = get_agent(args)
         evaluation1 = agent1.interface.evaluation(env1, agent1)
@@ -89,7 +91,6 @@ def get_top_k_diverse(traces, args):
 def main(args):
     output_and_metadata(args)
     """get environment and agent configs"""
-    args.config = get_config(args.load_path, args.config_filename, changes=args.config_changes)
     args.videos_dir = join(args.output_dir, "Highlight_Videos")
     args.frames_dir = join(args.output_dir, 'Highlight_Frames')
 
@@ -103,14 +104,14 @@ def main(args):
     log_msg(f'Saved traces', args.verbose)
 
     """rank trajectories"""
-    rank_trajectories(traces, args.importance_method)
+    rank_trajectories(traces, args.importance_method) #TODO change importance by highlights
 
     """select top k diverse trajectories"""
     highlights = get_top_k_diverse(traces, args)
     if not highlights:
         log_msg(f'No disagreements found', args.verbose)
         return
-    log_msg(f'Obtained {len(highlights)} disagreements', args.verbose)
+    log_msg(f'Obtained {len(highlights)} contrastive highlights', args.verbose)
 
     """randomize order"""
     if args.randomized: random.shuffle(highlights)
@@ -128,10 +129,11 @@ def main(args):
     highlight_frames, contra_rel_idxs = {}, {}
     for hl, indxs in traj_indxs.items():
         trace = traces[hl[0]]
-        highlight_frames[hl], contra_rel_idxs[hl] = trace.mark_frames(hl[1], indxs)
+        highlight_frames[hl], contra_rel_idxs[hl] = trace.mark_frames(hl[1], indxs, no_mark=args.no_mark)
 
     """save highlight frames"""
-    save_frames(highlight_frames, args.frames_dir, contra_rel_idxs)
+    save_frames(highlight_frames, args.frames_dir) if args.no_mark else \
+        save_frames(highlight_frames, args.frames_dir, contra_rel_idxs)
 
     """generate highlights video"""
     img_shape = highlight_frames[hl][0].shape
