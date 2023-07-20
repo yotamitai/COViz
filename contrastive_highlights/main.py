@@ -1,6 +1,7 @@
 from collections import defaultdict
 
 import json
+import numpy as np
 import random
 from datetime import datetime
 from os import makedirs, getpid
@@ -50,17 +51,26 @@ def contrastive_online(args):
 def rank_trajectories(traces, method):
     for t in traces:
         for i in range(len(t.states)):
+            contra_states = t.contrastive[i].states
+            max_trace_state = len(t.states) - 1
+            max_contrastive_state = contra_states[-1].id[1]
+            end_state = min(i + t.k_steps, max_trace_state, max_contrastive_state)
+            t.contrastive[i].traj_end_state = end_state
             if method == "lastState":
-                contra_states = t.contrastive[i].states
-                max_trace_state = len(t.states) - 1
-                max_contrastive_state = contra_states[-1].id[1]
-                end_state = min(i + t.k_steps, max_trace_state, max_contrastive_state)
-                t.contrastive[i].traj_end_state = end_state
                 state1 = t.states[end_state]
                 state2 = [x for x in contra_states if x.id[1] == end_state][0]
                 """the value of the state is defined by the best available action from it"""
                 t.contrastive[i].importance = abs(
                     max(state1.observed_actions) - max(state2.observed_actions))
+            elif method=="highlights":
+                # defined by second-best importance
+                action_values = t.states[i].observed_actions
+                t.contrastive[i].importance = np.max(action_values) - \
+                                              np.partition(action_values.flatten(), -2)[-2]
+
+
+
+
 
 
 def get_top_k_diverse(traces, args):

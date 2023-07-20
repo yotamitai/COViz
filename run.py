@@ -27,7 +27,10 @@ if __name__ == '__main__':
     args.pause = 3
     args.fps = 3
     args.contra_action_counter = 1
+
     args.no_mark = True
+    args.importance_method = "highlights"
+    # args.importance_method = "lastState"
 
     args.traces_path = abspath('results')
     if args.traces_path:
