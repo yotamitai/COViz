@@ -80,11 +80,11 @@ def save_frames(trajectories_dict, path, contra_rel_idxs=False):
             save_image(path, img_name, f)
 
 
-def save_highlights(img_shape, n_videos, args):
+def save_highlights(img_shape, n_videos, frames_path, videos_path, args):
     """Save Highlight videos"""
     height, width, layers = img_shape
     img_size = (width, height)
-    create_highlights_videos(args.frames_dir, args.videos_dir, n_videos, img_size,
+    create_highlights_videos(frames_path, videos_path, n_videos, img_size,
                              args.fps, pause=args.pause)
     # ffmpeg_highlights_seperated(args.videos_dir, n_videos)
 
