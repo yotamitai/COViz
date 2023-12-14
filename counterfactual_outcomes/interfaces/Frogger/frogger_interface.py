@@ -3,8 +3,8 @@ from os.path import join
 import gym
 import numpy as np
 
-from contrastive_highlights.interfaces.abstract_interface import AbstractInterface
-from contrastive_highlights.common.frogger_explorations import GreedyExploration
+from counterfactual_outcomes.interfaces.abstract_interface import AbstractInterface
+from counterfactual_outcomes.common.frogger_explorations import GreedyExploration
 from interestingness_xrl.learning.agents import QValueBasedAgent
 from interestingness_xrl.learning.behavior_tracker import BehaviorTracker
 from interestingness_xrl.scenarios import EnvironmentConfiguration, create_helper

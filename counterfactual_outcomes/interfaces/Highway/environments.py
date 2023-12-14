@@ -32,5 +32,5 @@ class Plain(HighwayEnv):
 
 register(
     id='Plain-v0',
-    entry_point='contrastive_highlights.interfaces.Highway.environments:Plain',
+    entry_point='counterfactual_outcomes.interfaces.Highway.environments:Plain',
 )

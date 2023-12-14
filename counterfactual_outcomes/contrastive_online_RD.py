@@ -1,57 +1,20 @@
-from copy import copy
+from os.path import abspath
 
-from contrastive_highlights.common import log_msg
-from contrastive_highlights.common import State
-
-
-class ContrastiveTrajectory(object):
-    def __init__(self, state_id, k_steps, trace):
-        self.importance = 0
-        self.k_steps = k_steps
-        self.id = state_id
-        self.start_idx = (state_id[1] - k_steps) if (state_id[1] - k_steps) >= 0 else 0
-        self.rewards = []
-        self.states = trace.states[self.start_idx:]
-        self.actions = []
-
-    def update(self, state_obj, r, action):
-        self.states.append(state_obj)
-        self.rewards.append(r)
-        self.actions.append(action)
-
-    def get_contrastive_trajectory(self, env, agent, state_id, contra_action, contra_counter):
-        action = contra_action
-        for step in range(state_id[1] + 1, state_id[1] + self.k_steps + 1):
-            obs, r, done, info = env.step(action)
-            contra_counter -= 1  # reduce contra counter
-            s = agent.interface.get_state_from_obs(agent, obs)
-            s_a_values = agent.interface.get_state_action_values(agent, s)
-            frame = env.render(mode='rgb_array')
-            features = agent.interface.get_features(env)
-            contra_state_id = (state_id[0], step)
-            state_obj = State(contra_state_id, obs, s, s_a_values, frame, features)
-            self.update(state_obj, r, action)
-            if done: break
-            if contra_counter > 0: continue
-            action = agent.interface.get_next_action(agent, obs, s)
+from counterfactual_outcomes.common import log_msg, save_traces
+from counterfactual_outcomes.common import State
+from counterfactual_outcomes.contrastive_online import get_contrastive_trajectory
 
 
-def get_contrastive_trajectory(state_id, trace, env, agent, contra_action, k_steps,
-                               contra_counter):
-    traj = ContrastiveTrajectory(state_id, k_steps, trace)
-    traj.get_contrastive_trajectory(env, agent, state_id, contra_action, contra_counter)
-    return traj
-
-
-def online_comparison(env1, agent1, env2, agent2, args, evaluation1=None, evaluation2=None):
+def online_comparison_RD(env1, agent1, env2, agent2, args, evaluation1=None, evaluation2=None):
     """
     get all contrastive trajectories a given agent
     """
     """Run"""
-    traces = []
+    traces, reward_decomps = [], []
     for n in range(args.n_traces):
         log_msg(f'Executing Trace number: {n}', args.verbose)
         trace = agent1.interface.contrastive_trace(n, args.k_steps)
+        rd_vals = []
         """initial state"""
         obs, _ = env1.reset(), env2.reset()
         assert obs.tolist() == _.tolist(), f'Nonidentical environment'
@@ -63,6 +26,7 @@ def online_comparison(env1, agent1, env2, agent2, args, evaluation1=None, evalua
             log_msg(f'\ttime-step number: {step}', args.verbose)
             state = agent1.interface.get_state_from_obs(agent1, obs, [r, done])
             s_a_values = agent1.interface.get_state_action_values(agent1, state)
+            rd_vals.append(agent1.interface.get_state_RD_action_values(agent1, state))
             state_id, frame = (n, step), env1.render(mode='rgb_array')
             features = agent1.interface.get_features(env1)
             state_obj = State(state_id, obs, state, s_a_values, frame, features)
@@ -86,4 +50,9 @@ def online_comparison(env1, agent1, env2, agent2, args, evaluation1=None, evalua
 
         """end of episode"""
         traces.append(trace)
+        trace.RD_vals = rd_vals
+        reward_decomps.append(rd_vals)
+    """save RD traces"""
+    save_traces(reward_decomps, args.output_dir, name='RD_Values.pkl')
+    save_traces(traces, abspath('results'), name='RD_Values.pkl')
     return traces

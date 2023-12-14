@@ -10,13 +10,13 @@ from pathlib import Path
 
 import gym
 
-from contrastive_highlights.common import Trace
+from counterfactual_outcomes.common import Trace
 from rl_agents.agents.common.exploration.abstract import exploration_factory
 from rl_agents.agents.common.factory import agent_factory
 
-from contrastive_highlights.interfaces.abstract_interface import AbstractInterface
+from counterfactual_outcomes.interfaces.abstract_interface import AbstractInterface
 from rl_agents.trainer.evaluation import Evaluation
-import contrastive_highlights.interfaces.Highway
+import counterfactual_outcomes.interfaces.Highway
 import multi_head.highway_env_local.envs.highway_env_local
 from multi_head.DQNAgent_local_files.pytorch_local import DQNAgent
 

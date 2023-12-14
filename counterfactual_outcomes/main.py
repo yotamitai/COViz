@@ -8,11 +8,11 @@ from os import makedirs, getpid
 from os.path import join, abspath
 from pathlib import Path
 
-from contrastive_highlights.common import save_traces, log_msg, load_traces, \
+from counterfactual_outcomes.common import save_traces, log_msg, load_traces, \
     get_highlight_traj_indxs, save_highlights, save_frames
-from contrastive_highlights.contrastive_online import online_comparison
-from contrastive_highlights.contrastive_online_RD import online_comparison_RD
-from contrastive_highlights.get_agent import get_config, get_agent
+from counterfactual_outcomes.contrastive_online import online_comparison
+from counterfactual_outcomes.contrastive_online_RD import online_comparison_RD
+from counterfactual_outcomes.get_agent import get_config, get_agent
 
 
 def output_and_metadata(args):
