@@ -1,4 +1,4 @@
-# Contrastive Highlights
+# Counterfactual Outcomes
 
 
 ### Installation  
