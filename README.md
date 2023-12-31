@@ -1,7 +1,7 @@
 # Counterfactual Outcomes
 Official code repository for "Explaining Reinforcement Learning Agents Through Counterfactual Action Outcomes" (AAAI-24)
 
-
+<img src="COViz_gif.gif" alt="COViz" width="900"/> 
 
 ## Installation  
   
